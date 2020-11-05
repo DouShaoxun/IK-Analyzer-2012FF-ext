@@ -25,6 +25,7 @@
 package org.wltea.analyzer.query;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,37 +53,58 @@ public class SWMCQueryBuilder {
 	 * @param quickMode
 	 * @return Lucene Query
 	 */
-	public static Query create(String fieldName ,String keywords , boolean quickMode){
+	//public static Query create(String fieldName ,String keywords , boolean quickMode){
+	//	if(fieldName == null || keywords == null){
+	//		throw new IllegalArgumentException("参数 fieldName 、 keywords 不能为null.");
+	//	}
+	//	//1.对keywords进行分词处理
+	//	List<Lexeme> lexemes = doAnalyze(keywords);
+	//	//2.根据分词结果，生成SWMCQuery
+	//	Query _SWMCQuery = getSWMCQuery(fieldName , lexemes , quickMode);
+	//	return _SWMCQuery;
+	//}
+	public static Query create(String fieldName ,String keywords , boolean quickMode,String filePath){
 		if(fieldName == null || keywords == null){
 			throw new IllegalArgumentException("参数 fieldName 、 keywords 不能为null.");
 		}
 		//1.对keywords进行分词处理
-		List<Lexeme> lexemes = doAnalyze(keywords);
+		List<Lexeme> lexemes = doAnalyze(keywords,filePath);
 		//2.根据分词结果，生成SWMCQuery
 		Query _SWMCQuery = getSWMCQuery(fieldName , lexemes , quickMode);
 		return _SWMCQuery;
 	}
-
 	/**
 	 * 分词切分，并返回结链表
 	 * @param keywords
 	 * @return
 	 */
-	private static List<Lexeme> doAnalyze(String keywords){
+	//private static List<Lexeme> doAnalyze(String keywords){
+	//	List<Lexeme> lexemes = new ArrayList<Lexeme>();
+	//	IKSegmenter ikSeg = new IKSegmenter(new StringReader(keywords) , true);
+	//	try{
+	//		Lexeme l = null;
+	//		while( (l = ikSeg.next()) != null){
+	//			lexemes.add(l);
+	//		}
+	//	}catch(IOException e){
+	//		e.printStackTrace();
+	//	}
+	//	return lexemes;
+	//}
+
+	private static List<Lexeme> doAnalyze(String keywords, String filePath){
 		List<Lexeme> lexemes = new ArrayList<Lexeme>();
-		IKSegmenter ikSeg = new IKSegmenter(new StringReader(keywords) , true);
 		try{
+			IKSegmenter ikSeg = new IKSegmenter(new StringReader(keywords) , true,filePath);
 			Lexeme l = null;
 			while( (l = ikSeg.next()) != null){
 				lexemes.add(l);
 			}
-		}catch(IOException e){
+		}catch(Exception e){
 			e.printStackTrace();
 		}
 		return lexemes;
 	}
-
-
 	/**
 	 * 根据分词结果生成SWMC搜索
 	 * @param fieldName

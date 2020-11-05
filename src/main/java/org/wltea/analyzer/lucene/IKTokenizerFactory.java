@@ -1,5 +1,7 @@
 package org.wltea.analyzer.lucene;
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.Map;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.util.TokenizerFactory;
@@ -7,6 +9,24 @@ import org.apache.lucene.util.AttributeFactory;
 
 public class IKTokenizerFactory extends TokenizerFactory {
     private boolean useSmart;
+    private InputStream inputStream;
+    private String filePath;
+
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
+    }
+
+    public InputStream getInputStream() {
+        return inputStream;
+    }
+
+    public void setInputStream(InputStream inputStream) {
+        this.inputStream = inputStream;
+    }
 
     public boolean useSmart() {
         return this.useSmart;
@@ -22,8 +42,19 @@ public class IKTokenizerFactory extends TokenizerFactory {
         this.setUseSmart(useSmartArg != null ? Boolean.parseBoolean(useSmartArg) : false);
     }
 
+    //public Tokenizer create(AttributeFactory factory) {
+    //    Tokenizer _IKTokenizer = new IKTokenizer(factory, this.useSmart);
+    //    return _IKTokenizer;
+    //}
+
+    @Override
     public Tokenizer create(AttributeFactory factory) {
-        Tokenizer _IKTokenizer = new IKTokenizer(factory, this.useSmart);
+        Tokenizer _IKTokenizer = null;
+        try {
+            _IKTokenizer = new IKTokenizer(factory, this.useSmart,this.filePath);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
         return _IKTokenizer;
     }
 }

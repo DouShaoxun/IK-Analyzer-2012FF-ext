@@ -24,6 +24,7 @@
  */
 package org.wltea.analyzer.core;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
@@ -50,8 +51,8 @@ public final class IKSegmenter {
 	private List<ISegmenter> segmenters;
 	//分词歧义裁决器
 	private IKArbitrator arbitrator;
-	
-
+	// IKAnalyzer.cfg.xml 所在路径
+	private String filePath;
 	/**
 	 * IK分词器构造函数
 	 * @param input 
@@ -60,15 +61,17 @@ public final class IKSegmenter {
 	 * 非智能分词：细粒度输出所有可能的切分结果
 	 * 智能分词： 合并数词和量词，对分词结果进行歧义判断
 	 */
-	public IKSegmenter(Reader input , boolean useSmart){
+	//public IKSegmenter(Reader input , boolean useSmart){
+	//	this.input = input;
+	//	this.cfg = DefaultConfig.getInstance();
+	//	this.cfg.setUseSmart(useSmart);
+	//	this.init();
+	//}
+
+	public IKSegmenter(Reader input , boolean useSmart, String filePath) throws FileNotFoundException {
 		this.input = input;
-		this.cfg = DefaultConfig.getInstance();
-		this.cfg.setUseSmart(useSmart);
-		this.init();
-	}
-	public IKSegmenter(Reader input , boolean useSmart, InputStream inputStream){
-		this.input = input;
-		this.cfg = DefaultConfig.getInstance();
+		this.filePath = filePath;
+		this.cfg = DefaultConfig.getInstance(filePath);
 		this.cfg.setUseSmart(useSmart);
 		this.init();
 	}
@@ -87,9 +90,19 @@ public final class IKSegmenter {
 	/**
 	 * 初始化
 	 */
+	//private void init(){
+	//	//初始化词典单例
+	//	Dictionary.initial(this.cfg,this.filePath);
+	//	//初始化分词上下文
+	//	this.context = new AnalyzeContext(this.cfg);
+	//	//加载子分词器
+	//	this.segmenters = this.loadSegmenters();
+	//	//加载歧义裁决器
+	//	this.arbitrator = new IKArbitrator();
+	//}
 	private void init(){
 		//初始化词典单例
-		Dictionary.initial(this.cfg);
+		Dictionary.initial(this.cfg,this.filePath);
 		//初始化分词上下文
 		this.context = new AnalyzeContext(this.cfg);
 		//加载子分词器
@@ -97,7 +110,6 @@ public final class IKSegmenter {
 		//加载歧义裁决器
 		this.arbitrator = new IKArbitrator();
 	}
-	
 	/**
 	 * 初始化词典，加载子分词器实现
 	 * @return List<ISegmenter>

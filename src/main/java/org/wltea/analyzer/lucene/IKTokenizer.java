@@ -1,26 +1,25 @@
 /**
  * IK 中文分词  版本 7.3.0
  * IK Analyzer release 7.3.0
- * 
+ * <p>
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
+ * <p>
  * 源代码由林良益(linliangyi2005@gmail.com)提供
  * 版权声明 2012，乌龙茶工作室
  * provided by Linliangyi and copyright 2012 by Oolong studio
- * 
  */
 package org.wltea.analyzer.lucene;
 
@@ -32,7 +31,9 @@ import org.apache.lucene.util.AttributeFactory;
 import org.wltea.analyzer.core.IKSegmenter;
 import org.wltea.analyzer.core.Lexeme;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * IK分词器 Lucene Tokenizer适配器类
@@ -40,88 +41,106 @@ import java.io.IOException;
  */
 public final class IKTokenizer extends Tokenizer {
 
-	//IK分词器实现
-	private IKSegmenter _IKImplement;
-	
-	//词元文本属性
-	private CharTermAttribute termAtt;
-	//词元位移属性
-	private OffsetAttribute offsetAtt;
-	//词元分类属性（该属性分类参考org.wltea.analyzer.core.Lexeme中的分类常量）
-	private TypeAttribute typeAtt;
-	//记录最后一个词元的结束位置
-	private int endPosition;
+    //IK分词器实现
+    private IKSegmenter _IKImplement;
 
-	public IKTokenizer() {
-		this(false);
-	}
+    //词元文本属性
+    private CharTermAttribute termAtt;
+    //词元位移属性
+    private OffsetAttribute offsetAtt;
+    //词元分类属性（该属性分类参考org.wltea.analyzer.core.Lexeme中的分类常量）
+    private TypeAttribute typeAtt;
+    //记录最后一个词元的结束位置
+    private int endPosition;
 
-	/**
-	 * Lucene 7.3.0 Tokenizer适配器类构造函数
-	 * @param useSmart
-	 */
-	public IKTokenizer(boolean useSmart){
-		this.init(useSmart);
-	}
+    //public IKTokenizer() {
+    //	this(false);
+    //}
+    public IKTokenizer(String filePath) throws FileNotFoundException {
+        this(false, filePath);
+    }
 
+    /**
+     * Lucene 7.3.0 Tokenizer适配器类构造函数
+     * @param useSmart
+     */
+    //public IKTokenizer(boolean useSmart){
+    //	this.init(useSmart);
+    //}
+    public IKTokenizer(boolean useSmart, String filePath) throws FileNotFoundException {
+        this.init(useSmart, filePath);
+    }
 
-	public IKTokenizer(AttributeFactory factory) {
-		this(factory, false);
-	}
+    //public IKTokenizer(AttributeFactory factory) {
+    //	this(factory, false);
+    //}
+    public IKTokenizer(AttributeFactory factory, String filePath) throws FileNotFoundException {
+        this(factory, false, filePath);
+    }
 
-	public IKTokenizer(AttributeFactory factory, boolean useSmart) {
-		super(factory);
-		this.init(useSmart);
-	}
+    //public IKTokenizer(AttributeFactory factory, boolean useSmart) {
+    //	super(factory);
+    //	this.init(useSmart);
+    //}
+    public IKTokenizer(AttributeFactory factory, boolean useSmart, String filePath) throws FileNotFoundException {
+        super(factory);
+        this.init(useSmart, filePath);
+    }
 
-	private void init(boolean useSmart) {
-		this.offsetAtt = this.addAttribute(OffsetAttribute.class);
-		this.termAtt = this.addAttribute(CharTermAttribute.class);
-		this.typeAtt = this.addAttribute(TypeAttribute.class);
-		this._IKImplement = new IKSegmenter(this.input, useSmart);
-	}
+    //private void init(boolean useSmart) {
+    //	this.offsetAtt = this.addAttribute(OffsetAttribute.class);
+    //	this.termAtt = this.addAttribute(CharTermAttribute.class);
+    //	this.typeAtt = this.addAttribute(TypeAttribute.class);
+    //	this._IKImplement = new IKSegmenter(this.input, useSmart);
+    //}
+    private void init(boolean useSmart, String filePath) throws FileNotFoundException {
+        this.offsetAtt = this.addAttribute(OffsetAttribute.class);
+        this.termAtt = this.addAttribute(CharTermAttribute.class);
+        this.typeAtt = this.addAttribute(TypeAttribute.class);
+        this._IKImplement = new IKSegmenter(this.input, useSmart, filePath);
+    }
 
-	/* (non-Javadoc)
-	 * @see org.apache.lucene.analysis.TokenStream#incrementToken()
-	 */
-	@Override
-	public boolean incrementToken() throws IOException {
-		//清除所有的词元属性
-		clearAttributes();
-		Lexeme nextLexeme = _IKImplement.next();
-		if(nextLexeme != null){
-			//将Lexeme转成Attributes
-			//设置词元文本
-			termAtt.append(nextLexeme.getLexemeText());
-			//设置词元长度
-			termAtt.setLength(nextLexeme.getLength());
-			//设置词元位移
-			offsetAtt.setOffset(nextLexeme.getBeginPosition(), nextLexeme.getEndPosition());
-			//记录分词的最后位置
-			endPosition = nextLexeme.getEndPosition();
-			//记录词元分类
-			typeAtt.setType(nextLexeme.getLexemeTypeString());			
-			//返会true告知还有下个词元
-			return true;
-		}
-		//返会false告知词元输出完毕
-		return false;
-	}
-	
-	/*
-	 * (non-Javadoc)
-	 * @see org.apache.lucene.analysis.Tokenizer#reset(java.io.Reader)
-	 */
-	@Override
-	public void reset() throws IOException {
-		super.reset();
-		_IKImplement.reset(input);
-	}	
-	
-	@Override
-	public final void end() {
-	    // set final offset
-		int finalOffset = correctOffset(this.endPosition);
-		offsetAtt.setOffset(finalOffset, finalOffset);
-	}
+    /* (non-Javadoc)
+     * @see org.apache.lucene.analysis.TokenStream#incrementToken()
+     */
+    @Override
+    public boolean incrementToken() throws IOException {
+        //清除所有的词元属性
+        clearAttributes();
+        Lexeme nextLexeme = _IKImplement.next();
+        if (nextLexeme != null) {
+            //将Lexeme转成Attributes
+            //设置词元文本
+            termAtt.append(nextLexeme.getLexemeText());
+            //设置词元长度
+            termAtt.setLength(nextLexeme.getLength());
+            //设置词元位移
+            offsetAtt.setOffset(nextLexeme.getBeginPosition(), nextLexeme.getEndPosition());
+            //记录分词的最后位置
+            endPosition = nextLexeme.getEndPosition();
+            //记录词元分类
+            typeAtt.setType(nextLexeme.getLexemeTypeString());
+            //返会true告知还有下个词元
+            return true;
+        }
+        //返会false告知词元输出完毕
+        return false;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.apache.lucene.analysis.Tokenizer#reset(java.io.Reader)
+     */
+    @Override
+    public void reset() throws IOException {
+        super.reset();
+        _IKImplement.reset(input);
+    }
+
+    @Override
+    public final void end() {
+        // set final offset
+        int finalOffset = correctOffset(this.endPosition);
+        offsetAtt.setOffset(finalOffset, finalOffset);
+    }
 }

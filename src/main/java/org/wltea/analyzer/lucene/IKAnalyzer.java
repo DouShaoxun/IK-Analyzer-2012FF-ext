@@ -27,6 +27,9 @@ package org.wltea.analyzer.lucene;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.Tokenizer;
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+
 /**
  * IK分词器，Lucene Analyzer接口实现
  * 兼容Solr 7.3.0版本
@@ -34,10 +37,19 @@ import org.apache.lucene.analysis.Tokenizer;
 public final class IKAnalyzer extends Analyzer{
 	
 	private boolean useSmart;
-	
+	private String filePath;
+
 	public boolean useSmart() {
 		return useSmart;
 	}
+
+	public String getFilePath() {
+		return filePath;
+	}
+
+
+
+
 
 	public void setUseSmart(boolean useSmart) {
 		this.useSmart = useSmart;
@@ -48,8 +60,17 @@ public final class IKAnalyzer extends Analyzer{
 	 * 
 	 * 默认细粒度切分算法
 	 */
-	public IKAnalyzer(){
-		this(false);
+	//public IKAnalyzer(){
+	//	this(false);
+	//}
+
+	public IKAnalyzer(String  filePath) {
+		this(false,filePath);
+	}
+
+	public IKAnalyzer(boolean useSmart, String filePath) {
+		this.useSmart = useSmart;
+		this.filePath = filePath;
 	}
 
 	/**
@@ -65,10 +86,20 @@ public final class IKAnalyzer extends Analyzer{
 	/**
 	 * 重载Analyzer接口，构造分词组件
 	 */
+	//@Override
+	//protected TokenStreamComponents createComponents(String fieldName) {
+	//	Tokenizer _IKTokenizer = new IKTokenizer(this.useSmart());
+	//	return new TokenStreamComponents(_IKTokenizer);
+	//}
 	@Override
 	protected TokenStreamComponents createComponents(String fieldName) {
-		Tokenizer _IKTokenizer = new IKTokenizer(this.useSmart());
+
+		Tokenizer _IKTokenizer = null;
+		try {
+			_IKTokenizer = new IKTokenizer(this.useSmart(),this.filePath);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
 		return new TokenStreamComponents(_IKTokenizer);
 	}
-
 }
