@@ -1,30 +1,30 @@
 /**
  * IK 中文分词  版本 7.3.0
  * IK Analyzer release 7.3.0
- * 
+ * <p>
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
+ * <p>
  * 源代码由林良益(linliangyi2005@gmail.com)提供
  * 版权声明 2012，乌龙茶工作室
  * provided by Linliangyi and copyright 2012 by Oolong studio
- *
  */
 package org.wltea.analyzer.sample;
 
 import java.io.*;
+import java.net.URISyntaxException;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
@@ -39,52 +39,52 @@ import org.wltea.analyzer.lucene.IKAnalyzer;
  *
  */
 public class IKAnalzyerDemo {
-	
-	public static void main(String[] args) throws FileNotFoundException {
-		//构建IK分词器，使用smart分词模式
-		//Analyzer analyzer = new IKAnalyzer(true);
-		//Analyzer analyzer = new IKAnalyzer();
 
-		//File file = new File("C:\\Users\\zqmao\\Desktop\\dic\\IKAnalyzer.cfg.xml");
-		//InputStream inputStream = new FileInputStream(file);
-		//FileInputStream fileInputStream = null;
-		String filePath = "C:\\Users\\zqmao\\Desktop\\dic";
-		Analyzer analyzer = new IKAnalyzer(filePath);
+    public static void main(String[] args) throws FileNotFoundException, URISyntaxException {
+        //构建IK分词器，使用smart分词模式
+        //Analyzer analyzer = new IKAnalyzer(true);
+        //Analyzer analyzer = new IKAnalyzer();
+        //File file = new File("C:\\Users\\zqmao\\Desktop\\dic\\IKAnalyzer.cfg.xml");
+        //InputStream inputStream = new FileInputStream(file);
+        //FileInputStream fileInputStream = null;
+        String filePath = "C:\\Users\\zqmao\\Desktop\\dic";
+        Analyzer analyzer = new IKAnalyzer(filePath);
+        System.out.println(System.getProperty("user.dir"));
+        System.out.println(new File(IKAnalzyerDemo.class.getClassLoader().getResource("").toURI()).getPath());
+        //获取Lucene的TokenStream对象
+        TokenStream ts = null;
+        try {
+            ts = analyzer.tokenStream("myfield", new StringReader("汽车起重机，分集水器,豆绍勋"));
+            //获取词元位置属性
+            OffsetAttribute offset = ts.addAttribute(OffsetAttribute.class);
+            //获取词元文本属性
+            CharTermAttribute term = ts.addAttribute(CharTermAttribute.class);
+            //获取词元文本属性
+            TypeAttribute type = ts.addAttribute(TypeAttribute.class);
 
-		//获取Lucene的TokenStream对象
-	    TokenStream ts = null;
-		try {
-			ts = analyzer.tokenStream("myfield", new StringReader("汽车起重机，分集水器,豆绍勋"));
-			//获取词元位置属性
-		    OffsetAttribute  offset = ts.addAttribute(OffsetAttribute.class); 
-		    //获取词元文本属性
-		    CharTermAttribute term = ts.addAttribute(CharTermAttribute.class);
-		    //获取词元文本属性
-		    TypeAttribute type = ts.addAttribute(TypeAttribute.class);
-		    
-		    
-		    //重置TokenStream（重置StringReader）
-			ts.reset(); 
-			//迭代获取分词结果
-			while (ts.incrementToken()) {
-			  System.out.println(offset.startOffset() + " - " + offset.endOffset() + " : " + term.toString() + " | " + type.type());
-			}
-			//关闭TokenStream（关闭StringReader）
-			ts.end();   // Perform end-of-stream operations, e.g. set the final offset.
 
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			//释放TokenStream的所有资源
-			if(ts != null){
-		      try {
-				ts.close();
-		      } catch (IOException e) {
-				e.printStackTrace();
-		      }
-			}
-	    }
-		
-	}
+            //重置TokenStream（重置StringReader）
+            ts.reset();
+            //迭代获取分词结果
+            while (ts.incrementToken()) {
+                System.out.println(offset.startOffset() + " - " + offset.endOffset() + " : " + term.toString() + " | " + type.type());
+            }
+            //关闭TokenStream（关闭StringReader）
+            ts.end();   // Perform end-of-stream operations, e.g. set the final offset.
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            //释放TokenStream的所有资源
+            if (ts != null) {
+                try {
+                    ts.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+    }
 
 }
