@@ -50,13 +50,13 @@ public final class IKTokenizer extends Tokenizer {
     private OffsetAttribute offsetAtt;
     //词元分类属性（该属性分类参考org.wltea.analyzer.core.Lexeme中的分类常量）
     private TypeAttribute typeAtt;
-    //记录最后一个词元的结束位置
+    /**
+     * 记录最后一个词元的结束位置
+     */
     private int endPosition;
 
-    //public IKTokenizer() {
-    //	this(false);
-    //}
-    public IKTokenizer(String filePath) throws FileNotFoundException {
+
+    public IKTokenizer(String filePath)  {
         this(false, filePath);
     }
 
@@ -64,43 +64,30 @@ public final class IKTokenizer extends Tokenizer {
      * Lucene 7.3.0 Tokenizer适配器类构造函数
      * @param useSmart
      */
-    //public IKTokenizer(boolean useSmart){
-    //	this.init(useSmart);
-    //}
-    public IKTokenizer(boolean useSmart, String filePath) throws FileNotFoundException {
+    public IKTokenizer(boolean useSmart, String filePath)  {
         this.init(useSmart, filePath);
     }
 
-    //public IKTokenizer(AttributeFactory factory) {
-    //	this(factory, false);
-    //}
+
     public IKTokenizer(AttributeFactory factory, String filePath) throws FileNotFoundException {
         this(factory, false, filePath);
     }
 
-    //public IKTokenizer(AttributeFactory factory, boolean useSmart) {
-    //	super(factory);
-    //	this.init(useSmart);
-    //}
-    public IKTokenizer(AttributeFactory factory, boolean useSmart, String filePath) throws FileNotFoundException {
+
+    public IKTokenizer(AttributeFactory factory, boolean useSmart, String filePath)  {
         super(factory);
         this.init(useSmart, filePath);
     }
 
-    //private void init(boolean useSmart) {
-    //	this.offsetAtt = this.addAttribute(OffsetAttribute.class);
-    //	this.termAtt = this.addAttribute(CharTermAttribute.class);
-    //	this.typeAtt = this.addAttribute(TypeAttribute.class);
-    //	this._IKImplement = new IKSegmenter(this.input, useSmart);
-    //}
-    private void init(boolean useSmart, String filePath) throws FileNotFoundException {
+
+    private void init(boolean useSmart, String filePath) {
         this.offsetAtt = this.addAttribute(OffsetAttribute.class);
         this.termAtt = this.addAttribute(CharTermAttribute.class);
         this.typeAtt = this.addAttribute(TypeAttribute.class);
         this._IKImplement = new IKSegmenter(this.input, useSmart, filePath);
     }
 
-    /* (non-Javadoc)
+    /** (non-Javadoc)
      * @see org.apache.lucene.analysis.TokenStream#incrementToken()
      */
     @Override
@@ -127,7 +114,7 @@ public final class IKTokenizer extends Tokenizer {
         return false;
     }
 
-    /*
+    /**
      * (non-Javadoc)
      * @see org.apache.lucene.analysis.Tokenizer#reset(java.io.Reader)
      */

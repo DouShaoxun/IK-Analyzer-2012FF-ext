@@ -44,14 +44,10 @@ public class IKAnalzyerDemo {
         //构建IK分词器，使用smart分词模式
         //Analyzer analyzer = new IKAnalyzer(true);
         //Analyzer analyzer = new IKAnalyzer();
-        //File file = new File("C:\\Users\\zqmao\\Desktop\\dic\\IKAnalyzer.cfg.xml");
-        //InputStream inputStream = new FileInputStream(file);
-        //FileInputStream fileInputStream = null;
         String filePath = "C:\\Users\\zqmao\\Desktop\\dic";
         Analyzer analyzer = new IKAnalyzer(filePath);
-        System.out.println(System.getProperty("user.dir"));
-        System.out.println(new File(IKAnalzyerDemo.class.getClassLoader().getResource("").toURI()).getPath());
-        //获取Lucene的TokenStream对象
+
+        // 获取Lucene的TokenStream对象
         TokenStream ts = null;
         try {
             ts = analyzer.tokenStream("myfield", new StringReader("汽车起重机，分集水器,豆绍勋"));

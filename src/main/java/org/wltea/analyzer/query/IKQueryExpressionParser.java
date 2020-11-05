@@ -384,100 +384,6 @@ public class IKQueryExpressionParser {
      * 语法解析
      *
      */
-    //private void parseSyntax(boolean quickMode){
-    //	for(int i = 0 ; i < this.elements.size() ; i++){
-    //		Element e = this.elements.get(i);
-    //		if('F' == e.type){
-    //			Element e2 = this.elements.get(i + 1);
-    //			if('=' != e2.type && ':' != e2.type){
-    //				throw new IllegalStateException("表达式异常： = 或 ： 号丢失");
-    //			}
-    //			Element e3 = this.elements.get(i + 2);
-    //			//处理 = 和 ： 运算
-    //			if('\'' == e3.type){
-    //				i+=2;
-    //				if('=' == e2.type){
-    //					TermQuery tQuery = new TermQuery(new Term(e.toString() , e3.toString()));
-    //					this.querys.push(tQuery);
-    //				}else if(':' == e2.type){
-    //					String keyword = e3.toString();
-    //					//SWMCQuery Here
-    //					Query _SWMCQuery =  SWMCQueryBuilder.create(e.toString(), keyword , quickMode);
-    //					this.querys.push(_SWMCQuery);
-    //				}
-    //
-    //			}else if('[' == e3.type || '{' == e3.type){
-    //				i+=2;
-    //				//处理 [] 和 {}
-    //				LinkedList<Element> eQueue = new LinkedList<Element>();
-    //				eQueue.add(e3);
-    //				for( i++ ; i < this.elements.size() ; i++){
-    //					Element eN = this.elements.get(i);
-    //					eQueue.add(eN);
-    //					if(']' == eN.type || '}' == eN.type){
-    //						break;
-    //					}
-    //				}
-    //				//翻译RangeQuery
-    //				Query rangeQuery = this.toTermRangeQuery(e , eQueue);
-    //				this.querys.push(rangeQuery);
-    //			}else{
-    //				throw new IllegalStateException("表达式异常：匹配值丢失");
-    //			}
-    //
-    //		}else if('(' == e.type){
-    //			this.operates.push(e);
-    //
-    //		}else if(')' == e.type){
-    //			boolean doPop = true;
-    //			while(doPop && !this.operates.empty()){
-    //				Element op = this.operates.pop();
-    //				if('(' == op.type){
-    //					doPop = false;
-    //				}else {
-    //					Query q = toBooleanQuery(op);
-    //					this.querys.push(q);
-    //				}
-    //
-    //			}
-    //		}else{
-    //
-    //			if(this.operates.isEmpty()){
-    //				this.operates.push(e);
-    //			}else{
-    //				boolean doPeek = true;
-    //				while(doPeek && !this.operates.isEmpty()){
-    //					Element eleOnTop = this.operates.peek();
-    //					if('(' == eleOnTop.type){
-    //						doPeek = false;
-    //						this.operates.push(e);
-    //					}else if(compare(e , eleOnTop) == 1){
-    //						this.operates.push(e);
-    //						doPeek = false;
-    //					}else if(compare(e , eleOnTop) == 0){
-    //						Query q = toBooleanQuery(eleOnTop);
-    //						this.operates.pop();
-    //						this.querys.push(q);
-    //					}else{
-    //						Query q = toBooleanQuery(eleOnTop);
-    //						this.operates.pop();
-    //						this.querys.push(q);
-    //					}
-    //				}
-    //
-    //				if(doPeek && this.operates.empty()){
-    //					this.operates.push(e);
-    //				}
-    //			}
-    //		}
-    //	}
-    //
-    //	while(!this.operates.isEmpty()){
-    //		Element eleOnTop = this.operates.pop();
-    //		Query q = toBooleanQuery(eleOnTop);
-    //		this.querys.push(q);
-    //	}
-    //}
     private void parseSyntax(boolean quickMode, String  filaPath) {
         for (int i = 0; i < this.elements.size(); i++) {
             Element e = this.elements.get(i);
@@ -798,19 +704,12 @@ public class IKQueryExpressionParser {
             this.eleTextBuff.append(c);
         }
 
+        @Override
         public String toString() {
             return this.eleTextBuff.toString();
         }
     }
 
-    //public static void main(String[] args){
-    //	IKQueryExpressionParser parser = new IKQueryExpressionParser();
-    //	//String ikQueryExp = "newsTitle:'的两款《魔兽世界》插件Bigfoot和月光宝盒'";
-    //	String ikQueryExp = "(id='ABcdRf' && date:{'20010101','20110101'} && keyword:'魔兽中国') || (content:'KSHT-KSH-A001-18'  || ulr='www.ik.com') - name:'林良益'";
-    //	Query result = parser.parseExp(ikQueryExp , true);
-    //	System.out.println(result);
-    //}
-    //
 
     public static void main(String[] args) throws FileNotFoundException {
         IKQueryExpressionParser parser = new IKQueryExpressionParser();

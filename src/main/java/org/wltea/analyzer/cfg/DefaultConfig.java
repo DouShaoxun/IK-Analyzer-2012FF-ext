@@ -32,65 +32,76 @@ import java.util.Properties;
 /**
  * Configuration 默认实现
  * 2012-5-8
- *
  */
 public class DefaultConfig implements Configuration {
 
-    /*
+    /**
      * 分词器默认字典路径
      */
     private static final String PATH_DIC_MAIN = "org/wltea/analyzer/dic/main2012.dic";
     private static final String PATH_DIC_QUANTIFIER = "org/wltea/analyzer/dic/quantifier.dic";
 
-    /*
+    /**
      * 分词器配置文件路径
      */
     private static final String FILE_NAME = "IKAnalyzer.cfg.xml";
-    //配置属性——扩展字典
+
+    /**
+     * 配置属性——扩展字典
+     */
     private static final String EXT_DICT = "ext_dict";
-    //配置属性——扩展停止词典
+
+    /**
+     * 配置属性——扩展停止词典
+     */
     private static final String EXT_STOP = "ext_stopwords";
 
     private Properties props;
-    /*
+
+    /**
      * 是否使用smart方式分词
      */
     private boolean useSmart;
+
+    /**
+     * IKAnalyzer.cfg.xml 所在目录
+     */
     private String filePath;
+
     /**
      * 返回单例
+     *
+     * @param filePath IKAnalyzer.cfg.xml 所在目录
      * @return Configuration单例
      */
-    //public static Configuration getInstance(){
-    //	return new DefaultConfig();
-    //}
-    public static Configuration getInstance(String filePath) throws FileNotFoundException {
+    public static Configuration getInstance(String filePath) {
         return new DefaultConfig(filePath);
     }
 
-    /*
+    /**
      * 初始化配置文件
+     * 支持自定义  IKAnalyzer.cfg.xml 所在目录
+     * @param filePath IKAnalyzer.cfg.xml 所在目录
+     * @throws FileNotFoundException
      */
-    //private DefaultConfig(){
-    //	props = new Properties();
-    //
-    //	InputStream input = this.getClass().getClassLoader().getResourceAsStream(FILE_NAME);
-    //	if(input != null){
-    //		try {
-    //			props.loadFromXML(input);
-    //		} catch (InvalidPropertiesFormatException e) {
-    //			e.printStackTrace();
-    //		} catch (IOException e) {
-    //			e.printStackTrace();
-    //		}
-    //	}
-    //}
-    private DefaultConfig(String filePath) throws FileNotFoundException {
+    private DefaultConfig(String filePath) {
         props = new Properties();
-
-        File file = new File(filePath + File.separator + FILE_NAME);
-        this.filePath = filePath;
-        InputStream inputStream = new FileInputStream(file);
+        InputStream inputStream = null;
+        if (!(filePath == null || "".equals(filePath))) {
+            try {
+                String ikcfgPath = filePath + File.separator + FILE_NAME;
+                File file = new File(ikcfgPath);
+                this.filePath = filePath;
+                inputStream = new FileInputStream(file);
+                System.out.println("ikcfgPath:" + ikcfgPath);
+            } catch (FileNotFoundException e) {
+                System.out.println(e.getLocalizedMessage() + ":将采用默认路径下配置");
+                //采用默认配置
+                inputStream = this.getClass().getClassLoader().getResourceAsStream(FILE_NAME);
+            }
+        } else {
+            inputStream = this.getClass().getClassLoader().getResourceAsStream(FILE_NAME);
+        }
         if (inputStream != null) {
             try {
                 props.loadFromXML(inputStream);
@@ -105,8 +116,10 @@ public class DefaultConfig implements Configuration {
     /**
      * 返回useSmart标志位
      * useSmart =true ，分词器使用智能切分策略， =false则使用细粒度切分
+     *
      * @return useSmart
      */
+    @Override
     public boolean useSmart() {
         return useSmart;
     }
@@ -114,8 +127,10 @@ public class DefaultConfig implements Configuration {
     /**
      * 设置useSmart标志位
      * useSmart =true ，分词器使用智能切分策略， =false则使用细粒度切分
+     *
      * @param useSmart
      */
+    @Override
     public void setUseSmart(boolean useSmart) {
         this.useSmart = useSmart;
     }
@@ -125,22 +140,27 @@ public class DefaultConfig implements Configuration {
      *
      * @return String 主词典路径
      */
+    @Override
     public String getMainDictionary() {
         return PATH_DIC_MAIN;
     }
 
     /**
      * 获取量词词典路径
+     *
      * @return String 量词词典路径
      */
+    @Override
     public String getQuantifierDicionary() {
         return PATH_DIC_QUANTIFIER;
     }
 
     /**
      * 获取扩展字典配置路径
+     *
      * @return List<String> 相对类加载器的路径
      */
+    @Override
     public List<String> getExtDictionarys() {
         List<String> extDictFiles = new ArrayList<String>(2);
         String extDictCfg = props.getProperty(EXT_DICT);
@@ -153,8 +173,10 @@ public class DefaultConfig implements Configuration {
 
     /**
      * 获取扩展停止词典配置路径
+     *
      * @return List<String> 相对类加载器的路径
      */
+    @Override
     public List<String> getExtStopWordDictionarys() {
         List<String> extStopWordDictFiles = new ArrayList<String>(2);
         String extStopWordDictCfg = props.getProperty(EXT_STOP);
@@ -165,7 +187,9 @@ public class DefaultConfig implements Configuration {
         return extStopWordDictFiles;
     }
 
-    /**加载扩展词典**/
+    /**
+     * 加载扩展词典
+     **/
     private void loadExtendDictionarys(List<String> extDictFiles, String extDictCfg) {
         String[] filePaths = extDictCfg.split(";");
         if (filePaths != null) {

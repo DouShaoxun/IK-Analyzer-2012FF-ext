@@ -31,6 +31,7 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.lucene.queryparser.flexible.core.util.StringUtils;
 import org.wltea.analyzer.cfg.Configuration;
 import org.wltea.analyzer.cfg.DefaultConfig;
 import org.wltea.analyzer.dic.Dictionary;
@@ -57,18 +58,11 @@ public final class IKSegmenter {
 	 * IK分词器构造函数
 	 * @param input 
 	 * @param useSmart 为true，使用智能分词策略
-	 * 
+	 * @param filePath IKAnalyzer.cfg.xml所在目录 如果不指定则使用resource的IKAnalyzer.cfg.xml
 	 * 非智能分词：细粒度输出所有可能的切分结果
 	 * 智能分词： 合并数词和量词，对分词结果进行歧义判断
 	 */
-	//public IKSegmenter(Reader input , boolean useSmart){
-	//	this.input = input;
-	//	this.cfg = DefaultConfig.getInstance();
-	//	this.cfg.setUseSmart(useSmart);
-	//	this.init();
-	//}
-
-	public IKSegmenter(Reader input , boolean useSmart, String filePath) throws FileNotFoundException {
+	public IKSegmenter(Reader input , boolean useSmart, String filePath)  {
 		this.input = input;
 		this.filePath = filePath;
 		this.cfg = DefaultConfig.getInstance(filePath);
@@ -90,16 +84,6 @@ public final class IKSegmenter {
 	/**
 	 * 初始化
 	 */
-	//private void init(){
-	//	//初始化词典单例
-	//	Dictionary.initial(this.cfg,this.filePath);
-	//	//初始化分词上下文
-	//	this.context = new AnalyzeContext(this.cfg);
-	//	//加载子分词器
-	//	this.segmenters = this.loadSegmenters();
-	//	//加载歧义裁决器
-	//	this.arbitrator = new IKArbitrator();
-	//}
 	private void init(){
 		//初始化词典单例
 		Dictionary.initial(this.cfg,this.filePath);

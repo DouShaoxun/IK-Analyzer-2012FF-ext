@@ -42,19 +42,10 @@ public class IKTokenizerFactory extends TokenizerFactory {
         this.setUseSmart(useSmartArg != null ? Boolean.parseBoolean(useSmartArg) : false);
     }
 
-    //public Tokenizer create(AttributeFactory factory) {
-    //    Tokenizer _IKTokenizer = new IKTokenizer(factory, this.useSmart);
-    //    return _IKTokenizer;
-    //}
-
     @Override
     public Tokenizer create(AttributeFactory factory) {
         Tokenizer _IKTokenizer = null;
-        try {
-            _IKTokenizer = new IKTokenizer(factory, this.useSmart,this.filePath);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+        _IKTokenizer = new IKTokenizer(factory, this.useSmart,this.filePath);
         return _IKTokenizer;
     }
 }
